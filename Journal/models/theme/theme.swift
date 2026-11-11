@@ -32,6 +32,8 @@ enum Theme {
         static let bodySupporting = Font.system(size: 18, weight: .light)
         static let captionM       = Font.system(size: 16, weight: .regular)
         static let captionS       = Font.system(size: 14, weight: .regular)
+        static let emptyTitle = Font.system(size: 24, weight: .bold)
+        static let emptyBody  = Font.system(size: 18, weight: .regular)
     }
 
     // MARK: - 03 Icons (SF Symbols)
@@ -43,6 +45,10 @@ enum Theme {
         static let checkmark      = "checkmark"
         static let plus           = "plus"
         static let filter         = "line.3.horizontal.decrease"
+    }
+    // MARK: - Images
+    enum Images {
+        static let emptyState = "journal-notepad"
     }
 
     // MARK: - المسافات والزوايا (مب موجودة بالتصميم، تقريبية)
@@ -56,3 +62,4 @@ enum Theme {
         static let card: CGFloat = 16
     }
 }
+

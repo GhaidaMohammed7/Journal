@@ -1,27 +1,39 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var journals: [Journal] = [
-        Journal(title: "دوام الاثنين", content: "اليوم تعبانة بس الجو حلو", date: Date(), isBookmarked: true),
-        Journal(title: "Today's Journal", content: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", date: Date()),
-        Journal(title: "Great Day", content: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", date: Date())
-    ]
+    @State private var journals: [Journal]
 
+    init(journals: [Journal] = []) {
+        _journals = State(initialValue: journals)
+    }
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: Theme.Spacing.medium) {
-                    ForEach(journals) { journal in
-                        JournalCard(journal: journal)
-                    }
-                }
-                .padding(Theme.Spacing.large)
+        VStack(spacing: 0) {
+            TopBar(title: "Journal", onFilter: filterTapped, onAdd: addTapped)
+
+            if journals.isEmpty {
+                EmptyStateView()
+            } else {
+                journalList
             }
-            .background(Theme.Colors.backgroundMain)
-            .navigationTitle("Journal")
         }
+        .background(Theme.Colors.backgroundMain.ignoresSafeArea())
         .preferredColorScheme(.dark)
     }
+
+    private var journalList: some View {
+        ScrollView {
+            VStack(spacing: Theme.Spacing.medium) {
+                ForEach(journals) { journal in
+                    JournalCard(journal: journal)
+                }
+            }
+            .padding(Theme.Spacing.large)
+        }
+    }
+
+    private func filterTapped() {}
+
+    private func addTapped() {}
 }
 
 struct JournalCard: View {
@@ -54,4 +66,13 @@ struct JournalCard: View {
 
 #Preview {
     ContentView()
+}
+#Preview("With Journals") {
+    ContentView(journals: Journal.mockData)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Empty State") {
+    ContentView()
+        .preferredColorScheme(.dark)
 }
