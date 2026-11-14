@@ -4,7 +4,7 @@ struct JournalCard: View {
 
     // MARK: - Properties
     let journal: Journal
-
+    let onBookmark: () -> Void
     // MARK: - Body
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.small) {
@@ -28,8 +28,12 @@ struct JournalCard: View {
     // MARK: - Subviews
     private var header: some View {
         LabeledContent {
-            Image(systemName: journal.isBookmarked ? "bookmark.fill" : "bookmark")
-                .foregroundStyle(Theme.Colors.primaryAccent)
+            Button(action: onBookmark) {
+                Image(systemName: journal.isBookmarked ? "bookmark.fill" : "bookmark")
+                    .foregroundStyle(Theme.Colors.primaryAccent)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.borderless)
         } label: {
             Text(journal.title)
                 .font(.title2.weight(.semibold))
@@ -40,7 +44,7 @@ struct JournalCard: View {
 }
 
 #Preview {
-    JournalCard(journal: Journal.mockData[0])
+    JournalCard(journal: Journal.mockData[0], onBookmark: {})
         .padding()
         .preferredColorScheme(.dark)
 }

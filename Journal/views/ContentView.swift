@@ -9,12 +9,21 @@ struct ContentView: View {
     @State private var showNewJournal = false
     @State private var showDeleteAlert = false
     @State private var journalToDelete: Journal?
+    @State private var searchText = ""
 
     // MARK: - Init
     init(journals: [Journal] = []) {
         _journals = State(initialValue: journals)
     }
-
+    // MARK: - Computed
+    private var filteredJournals: [Journal] {
+        if searchText.isEmpty {
+            return journals
+        }
+        return journals.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText)
+        }
+    }
     // MARK: - Body
     var body: some View {
         NavigationStack {
@@ -26,6 +35,7 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Journal")
+            .searchable(text: $searchText, prompt: "Search")
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button(action: filterTapped) {
@@ -57,8 +67,8 @@ struct ContentView: View {
     // MARK: - Subviews
     private var journalList: some View {
         List {
-            ForEach(journals) { journal in
-                JournalCard(journal: journal)
+            ForEach(filteredJournals) { journal in
+                JournalCard(journal: journal, onBookmark: { toggleBookmark(journal) })
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -96,6 +106,10 @@ struct ContentView: View {
         guard let journal = journalToDelete else { return }
         journals.removeAll { $0.id == journal.id }
         journalToDelete = nil
+    }
+    private func toggleBookmark(_ journal: Journal) {
+        guard let index = journals.firstIndex(where: { $0.id == journal.id }) else { return }
+        journals[index].isBookmarked.toggle()
     }
 }
 

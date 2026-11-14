@@ -13,6 +13,7 @@ enum Theme {
     // MARK: - Images
     enum Images {
         static let emptyState = "journal-notepad"
+        static let splashLogo = "JournalLogo"
     }
 
     // MARK: - Spacing
@@ -27,3 +28,4 @@ enum Theme {
         static let card: CGFloat = 16
     }
 }
+

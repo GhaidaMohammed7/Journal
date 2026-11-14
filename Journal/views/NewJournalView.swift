@@ -6,12 +6,17 @@ struct NewJournalView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var content = ""
+    @State private var showDiscardDialog = false
 
     var onSave: (_ title: String, _ content: String) -> Void
 
     // MARK: - Computed
     private var isSaveDisabled: Bool {
         title.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private var hasChanges: Bool {
+        !title.isEmpty || !content.isEmpty
     }
 
     // MARK: - Body
@@ -45,6 +50,15 @@ struct NewJournalView: View {
                     .disabled(isSaveDisabled)
                 }
             }
+            .alert(
+                "Are you sure you want to discard changes on this journal?",
+                isPresented: $showDiscardDialog
+            ) {
+                Button("Discard Changes", role: .destructive) {
+                    dismiss()
+                }
+                Button("Keep Editing", role: .cancel) { }
+            }
         }
     }
 
@@ -65,7 +79,11 @@ struct NewJournalView: View {
 
     // MARK: - Actions
     private func cancelTapped() {
-        dismiss()
+        if hasChanges {
+            showDiscardDialog = true
+        } else {
+            dismiss()
+        }
     }
 
     private func saveTapped() {
