@@ -10,19 +10,41 @@ struct ContentView: View {
     @State private var showDeleteAlert = false
     @State private var journalToDelete: Journal?
     @State private var searchText = ""
-
+    @State private var selectedFilter: JournalFilter = .all
     // MARK: - Init
     init(journals: [Journal] = []) {
         _journals = State(initialValue: journals)
     }
     // MARK: - Computed
+   
+    // MARK: - Computed
+
     private var filteredJournals: [Journal] {
-        if searchText.isEmpty {
-            return journals
+
+        var result = journals
+
+        // Search
+        if !searchText.isEmpty {
+            result = result.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText)
+                || $0.content.localizedCaseInsensitiveContains(searchText)
+            }
         }
-        return journals.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText)
+
+        // Filter
+        switch selectedFilter {
+
+        case .all:
+            break
+
+        case .date:
+            result.sort { $0.date > $1.date }
+
+        case .bookmarked:
+            result = result.filter { $0.isBookmarked }
         }
+
+        return result
     }
     // MARK: - Body
     var body: some View {
@@ -38,9 +60,18 @@ struct ContentView: View {
             .searchable(text: $searchText, prompt: "Search")
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Button(action: filterTapped) {
+
+                    Menu {
+                        Picker("Filter", selection: $selectedFilter) {
+                            ForEach(JournalFilter.allCases) { filter in
+                                Text(filter.title)
+                                    .tag(filter)
+                            }
+                        }
+                    } label: {
                         Image(systemName: "line.3.horizontal.decrease")
                     }
+
                     Button(action: addTapped) {
                         Image(systemName: "plus")
                     }
@@ -85,7 +116,6 @@ struct ContentView: View {
     }
 
     // MARK: - UI Actions
-    private func filterTapped() {}
 
     private func addTapped() {
         showNewJournal = true
@@ -119,4 +149,22 @@ struct ContentView: View {
 
 #Preview("Empty State") {
     ContentView()
+}
+enum JournalFilter: String, CaseIterable, Identifiable {
+    case all
+    case date
+    case bookmarked
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .all:
+            return "All Entries"
+        case .date:
+            return "Entry Date"
+        case .bookmarked:
+            return "Bookmarked"
+        }
+    }
 }
