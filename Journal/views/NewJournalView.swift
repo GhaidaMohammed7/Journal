@@ -4,11 +4,21 @@ struct NewJournalView: View {
 
     // MARK: - Properties
     @Environment(\.dismiss) private var dismiss
-    @State private var title = ""
-    @State private var content = ""
+    @State private var title: String
+    @State private var content: String
     @State private var showDiscardDialog = false
 
+    let journal: Journal?
     var onSave: (_ title: String, _ content: String) -> Void
+
+    // MARK: - Init
+    init(journal: Journal? = nil,
+         onSave: @escaping (_ title: String, _ content: String) -> Void) {
+        self.journal = journal
+        self.onSave = onSave
+        _title = State(initialValue: journal?.title ?? "")
+        _content = State(initialValue: journal?.content ?? "")
+    }
 
     // MARK: - Computed
     private var isSaveDisabled: Bool {
@@ -16,7 +26,10 @@ struct NewJournalView: View {
     }
 
     private var hasChanges: Bool {
-        !title.isEmpty || !content.isEmpty
+        if let journal {
+            return title != journal.title || content != journal.content
+        }
+        return !title.isEmpty || !content.isEmpty
     }
 
     // MARK: - Body
@@ -26,7 +39,7 @@ struct NewJournalView: View {
                 TextField("Title", text: $title)
                     .font(.title.bold())
 
-                Text(Date().formatted(date: .numeric, time: .omitted))
+                Text((journal?.date ?? Date()).formatted(date: .numeric, time: .omitted))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
@@ -92,7 +105,12 @@ struct NewJournalView: View {
     }
 }
 
-#Preview {
+#Preview("New") {
     NewJournalView(onSave: { _, _ in })
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Edit") {
+    NewJournalView(journal: Journal.mockData[0], onSave: { _, _ in })
         .preferredColorScheme(.dark)
 }

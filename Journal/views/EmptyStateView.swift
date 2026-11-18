@@ -8,6 +8,9 @@ struct EmptyStateView: View {
                     .foregroundStyle(Theme.Colors.textAccent)
             } icon: {
                 Image(Theme.Images.emptyState)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 140)
             }
         } description: {
             Text("Craft your personal diary, tap the plus icon to begin")

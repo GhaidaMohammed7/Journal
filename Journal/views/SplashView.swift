@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SplashView: View {
-
+   
     // MARK: - Body
     var body: some View {
         VStack(spacing: Theme.Spacing.medium) {
@@ -9,6 +9,7 @@ struct SplashView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: 100)
+          
 
             Text("Journali")
                 .font(.largeTitle.weight(.black))
