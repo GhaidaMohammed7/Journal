@@ -44,7 +44,10 @@ struct JournalCard: View {
 }
 
 #Preview {
-    JournalCard(journal: Journal.mockData[0], onBookmark: {})
-        .padding()
-        .preferredColorScheme(.dark)
+    JournalCard(
+        journal: Journal(title: "My Birthday", content: "Lorem ipsum dolor sit amet", isBookmarked: true),
+        onBookmark: {}
+    )
+    .padding()
+    .preferredColorScheme(.dark)
 }

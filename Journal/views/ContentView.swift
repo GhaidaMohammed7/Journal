@@ -1,19 +1,17 @@
 import SwiftUI
-
+import SwiftData
 struct ContentView: View {
 
     // MARK: - Data
-    @State private var viewModel: JournalViewModel
+    @Environment(\.modelContext) private var modelContext
+       @Query(sort: \Journal.date, order: .reverse) private var journals: [Journal]
+       @State private var viewModel = JournalViewModel()
 
     // MARK: - UI State
     @State private var showNewJournal = false
     @State private var showDeleteAlert = false
     @State private var journalToDelete: Journal?
-
-    // MARK: - Init
-    init(journals: [Journal] = []) {
-        _viewModel = State(initialValue: JournalViewModel(journals: journals))
-    }
+    @State private var journalToEdit: Journal?
 
     // MARK: - Body
     var body: some View {
@@ -21,7 +19,7 @@ struct ContentView: View {
 
         NavigationStack {
             Group {
-                if viewModel.journals.isEmpty {
+                if journals.isEmpty {
                     EmptyStateView()
                 } else {
                     journalList
@@ -50,8 +48,15 @@ struct ContentView: View {
         }
         .tint(.white)
         .preferredColorScheme(.dark)
-        .sheet(isPresented: $showNewJournal) {
-            NewJournalView(onSave: viewModel.addJournal)
+         .sheet(isPresented: $showNewJournal) {
+            NewJournalView { title, content in
+                viewModel.addJournal(title: title, content: content, context: modelContext)
+            }
+        }
+        .sheet(item: $journalToEdit) { journal in
+            NewJournalView(journal: journal) { title, content in
+                viewModel.updateJournal(journal, title: title, content: content)
+            }
         }
         .alert("Delete Journal?", isPresented: $showDeleteAlert) {
             Button("Cancel", role: .cancel) {
@@ -68,27 +73,34 @@ struct ContentView: View {
     // MARK: - Subviews
     private var journalList: some View {
         List {
-            ForEach(viewModel.filteredJournals) { journal in
+            ForEach(viewModel.filteredJournals(from: journals)) { journal in
                 JournalCard(
                     journal: journal,
                     onBookmark: { viewModel.toggleBookmark(journal) }
                 )
+                .onTapGesture { editTapped(journal) }
                 .listRowBackground(Color.clear)
                 .listRowSeparator(.hidden)
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     Button(role: .destructive) {
                         deleteTapped(journal)
                     } label: {
-                        Image(systemName: "trash.fill")
+                        Image(systemName: Theme.Icons.trash)
                     }
                     .tint(Theme.Colors.destructive)
                 }
             }
         }
         .listStyle(.plain)
+        .scrollContentBackground(.hidden)
     }
 
     // MARK: - UI Actions
+    
+    private func editTapped(_ journal: Journal) {
+        journalToEdit = journal
+    }
+    
     private func addTapped() {
         showNewJournal = true
     }
@@ -100,15 +112,12 @@ struct ContentView: View {
 
     private func confirmDelete() {
         guard let journal = journalToDelete else { return }
-        viewModel.deleteJournal(journal)
+        viewModel.deleteJournal(journal, context: modelContext)
         journalToDelete = nil
     }
 }
 
-#Preview("With Journals") {
-    ContentView(journals: Journal.mockData)
-}
-
-#Preview("Empty State") {
+#Preview {
     ContentView()
+        .modelContainer(for: Journal.self, inMemory: true)
 }

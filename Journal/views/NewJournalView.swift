@@ -22,7 +22,8 @@ struct NewJournalView: View {
 
     // MARK: - Computed
     private var isSaveDisabled: Bool {
-        title.trimmingCharacters(in: .whitespaces).isEmpty
+        title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+        content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private var hasChanges: Bool {
@@ -111,6 +112,9 @@ struct NewJournalView: View {
 }
 
 #Preview("Edit") {
-    NewJournalView(journal: Journal.mockData[0], onSave: { _, _ in })
-        .preferredColorScheme(.dark)
+    NewJournalView(
+        journal: Journal(title: "My Birthday", content: "Lorem ipsum dolor sit amet"),
+        onSave: { _, _ in }
+    )
+    .preferredColorScheme(.dark)
 }

@@ -1,5 +1,5 @@
 import SwiftUI
-
+import SwiftData
 struct RootView: View {
 
     // MARK: - UI State
@@ -32,4 +32,5 @@ struct RootView: View {
 
 #Preview {
     RootView()
+        .modelContainer(for: Journal.self, inMemory: true)
 }

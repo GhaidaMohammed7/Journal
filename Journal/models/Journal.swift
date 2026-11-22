@@ -1,22 +1,19 @@
-//
-//  Journal.swift
-//  Journal
-//
-//  Created by ghaida on 29/05/1448 AH.
-//
 import Foundation
+import SwiftData
 
-struct Journal: Identifiable {
-    let id = UUID()
+@Model
+final class Journal {
+    var id: UUID
     var title: String
     var content: String
     var date: Date
-    var isBookmarked: Bool = false
-}
-extension Journal {
-    static let mockData: [Journal] = [
-        Journal(title: "First Day", content: "Started my journal today", date: Date()),
-        Journal(title: "Trip", content: "We went to the beach", date: Date()),
-        Journal(title: "Ideas", content: "New app idea", date: Date())
-    ]
+    var isBookmarked: Bool
+
+    init(title: String, content: String, date: Date = Date(), isBookmarked: Bool = false) {
+        self.id = UUID()
+        self.title = title
+        self.content = content
+        self.date = date
+        self.isBookmarked = isBookmarked
+    }
 }

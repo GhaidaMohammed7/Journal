@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct MyApp: App {
@@ -6,5 +7,6 @@ struct MyApp: App {
         WindowGroup {
             RootView()
         }
+        .modelContainer(for: Journal.self)
     }
 }
